@@ -71,6 +71,9 @@ fun help(event: MessageCreateEvent) {
             .addField("View market price", "!bc CUR [amount]", true)
             .addField("Get a cookie!", "!cookie", true)
             .addField("Calculate Prices (Admin only)", "!calculate CUR1 CUR2 [amount]", true)
+            .addField("check Balance", "!balance", true)
+            .addField("register new acc", "!register", true)
+            .addField("Get Keys", "!account CUR", true)
     event.channel.sendMessage(embed)
 
 
