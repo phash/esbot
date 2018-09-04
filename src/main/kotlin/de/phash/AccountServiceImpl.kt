@@ -69,7 +69,7 @@ class AccountServiceImpl : AccountService {
         val contents = event.message.content.split(" ")
         if (contents.size != 4) return "Use: !send CUR amount address"
         when (contents[1].toUpperCase()) {
-            "SEM" -> semuxService.send(contents[2], contents[3])
+            "SEM" -> semuxService.send("user", contents[2], contents[3])
         }
 
 
@@ -80,7 +80,7 @@ class AccountServiceImpl : AccountService {
         val contents = event.message.content.split(" ")
         if (contents.size != 4) return "Use: !tip CUR amount @User"
         when (contents[1].toUpperCase()) {
-            "SEM" -> semuxService.tip(contents[2], contents[3])
+            "SEM" -> semuxService.tip("user",contents[2], contents[3])
         }
 
 
