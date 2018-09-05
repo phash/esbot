@@ -14,6 +14,7 @@ import java.nio.charset.Charset
 
 class SemuxServiceImpl : SemuxService {
 
+
     data class Benutzer(val _id: ObjectId, val name: String, val discordId: String, val accounts: HashMap<String, Account>)
     data class Account(val _id: ObjectId, val currencyName: String, val address: String)
 
@@ -21,7 +22,6 @@ class SemuxServiceImpl : SemuxService {
     //sex.createAccount()
     private val client: MongoClient = KMongo.createClient("localhost", 27017)
     private val database: MongoDatabase = client.getDatabase("accounts")
-    private val fee = 5000000L
     private val col: MongoCollection<Benutzer>
 
     init {
@@ -35,6 +35,9 @@ class SemuxServiceImpl : SemuxService {
 
     companion object {
         val instance: SemuxServiceImpl by lazy { Holder.INSTANCE }
+        val fee = 5000000L
+        val devFee = 250000000L
+        val semMultiplicator = BigDecimal("1000000000")
     }
 
     override fun register(name: String, discordId: String): String {

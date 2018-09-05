@@ -65,11 +65,36 @@ class AccountServiceImpl : AccountService {
 
     }
 
+    private val devAdress: String = "0xf1de68ec80f5ce2ecbf9dcd726f24cb8c6526ac8"
+
+
+
     override fun send(event: MessageCreateEvent): String {
         val contents = event.message.content.split(" ")
         if (contents.size == 4 || contents.size == 5) {
+
             when (contents[1].toUpperCase()) {
-                "SEM" -> return semuxService.send(event.message.author.idAsString, contents[2], contents[3], contents[4])
+                "SEM" -> {
+                    var available = semuxService.checkBalance(event.message.author.idAsString).available.multiply(SemuxServiceImpl.semMultiplicator)
+                    var fee = BigDecimal(SemuxServiceImpl.fee)
+                    var devFee = BigDecimal(SemuxServiceImpl.devFee)
+                    var amount = BigDecimal(contents[2]).multiply(SemuxServiceImpl.semMultiplicator)
+                    var possible = available.subtract(fee.multiply(BigDecimal("2")).add(devFee).add(amount))
+                    var dataToSend = ""
+                    if (contents.size == 5) {
+                        dataToSend = contents[4]
+                    }
+                    println("available $available - fee $fee - devFee $devFee - amounz - $amount + possible $possible")
+                    if (possible.compareTo(BigDecimal.ZERO) > 0) {
+
+                        var resp = semuxService.send(event.message.author.idAsString, contents[2], contents[3], dataToSend)
+                        semuxService.send(event.message.author.idAsString, devFee.divide(SemuxServiceImpl.semMultiplicator).toPlainString(), devAdress, "dev fee")
+                        resp += " plus devFee: ${devFee.divide(SemuxServiceImpl.semMultiplicator).toPlainString()}"
+                        return resp
+                    } else {
+                        return "not enough funds!"
+                    }
+                }
             }
         } else
             return "Use: !send CUR amount address [data]"

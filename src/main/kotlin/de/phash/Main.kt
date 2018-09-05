@@ -86,6 +86,8 @@ fun help(event: MessageCreateEvent) {
             .addField("check Balance", "!balance", true)
             .addField("register new acc", "!register", true)
             .addField("Get Keys", "!account CUR", true)
+            .addField("Send Money to address", "!send CUR amount receiver", true)
+            .addField("Tip Money", "!tip CUR amount @user", true)
     event.channel.sendMessage(embed)
 
 
