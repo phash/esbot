@@ -37,6 +37,8 @@ fun main(args: Array<String>) {
             account(event)
         else if (event.message.content.startsWith("!send", ignoreCase = true))
             send(event)
+        else if (event.message.content.startsWith("!tip", ignoreCase = true))
+            tip(event)
         else if (event.message.content.startsWith("!cookie", ignoreCase = true))
             event.channel.sendMessage("serving ${event.message.author.displayName} a delicious cookie!")
         else if (event.message.content.startsWith("!balance", ignoreCase = true))
@@ -45,6 +47,10 @@ fun main(args: Array<String>) {
     }
 
 
+}
+
+fun tip(event: MessageCreateEvent) {
+    event.message.channel.sendMessage(accountService.tip(event))
 }
 
 fun send(event: MessageCreateEvent) {
