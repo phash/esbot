@@ -22,7 +22,7 @@
         <junit.version>4.12</junit.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>
+        q
     </properties>
 
     <dependencies>

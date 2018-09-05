@@ -36,10 +36,9 @@ class AccountServiceImpl : AccountService {
     }
 
     override fun register(event: MessageCreateEvent) {
-        val contents = event.message.content.split(" ")
         val author = event.message.author
         //  println("id: ${author.id}, idAsString: ${author.idAsString}, discName: ${author.discriminatedName}, name: ${author.name}, display: ${author.displayName}")
-        val semuxMessage = semuxService.register(author.idAsString)
+        val semuxMessage = semuxService.register(author.displayName, author.idAsString)
 
         event.channel.sendMessage(semuxMessage)
     }
@@ -67,20 +66,22 @@ class AccountServiceImpl : AccountService {
 
     override fun send(event: MessageCreateEvent): String {
         val contents = event.message.content.split(" ")
-        if (contents.size != 4) return "Use: !send CUR amount address"
-        when (contents[1].toUpperCase()) {
-            "SEM" -> semuxService.send("user", contents[2], contents[3])
-        }
+        if (contents.size == 4 || contents.size == 5) {
+            when (contents[1].toUpperCase()) {
+                "SEM" -> return semuxService.send(event.message.author.idAsString, contents[2], contents[3], contents[4])
+            }
+        } else
+            return "Use: !send CUR amount address [data]"
 
 
-        return ""
+        return "not supported!"
     }
 
     override fun tip(event: MessageCreateEvent): String {
         val contents = event.message.content.split(" ")
         if (contents.size != 4) return "Use: !tip CUR amount @User"
         when (contents[1].toUpperCase()) {
-            "SEM" -> semuxService.tip("user",contents[2], contents[3])
+            "SEM" -> semuxService.tip(event.message.author.idAsString, contents[2], contents[3], contents[4])
         }
 
 

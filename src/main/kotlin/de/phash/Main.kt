@@ -35,6 +35,8 @@ fun main(args: Array<String>) {
             regist(event)
         else if (event.message.content.startsWith("!account", ignoreCase = true))
             account(event)
+        else if (event.message.content.startsWith("!send", ignoreCase = true))
+            send(event)
         else if (event.message.content.startsWith("!cookie", ignoreCase = true))
             event.channel.sendMessage("serving ${event.message.author.displayName} a delicious cookie!")
         else if (event.message.content.startsWith("!balance", ignoreCase = true))
@@ -43,6 +45,10 @@ fun main(args: Array<String>) {
     }
 
 
+}
+
+fun send(event: MessageCreateEvent) {
+    event.message.channel.sendMessage(accountService.send(event))
 }
 
 fun checkBalance(event: MessageCreateEvent) {
