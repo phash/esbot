@@ -3,6 +3,7 @@ package de.phash
 import de.phash.semux.SemuxService
 import de.phash.semux.SemuxServiceImpl
 import org.javacord.api.entity.message.embed.EmbedBuilder
+import org.javacord.api.entity.user.User
 import org.javacord.api.event.message.MessageCreateEvent
 import java.math.BigDecimal
 import java.text.DecimalFormat
@@ -78,20 +79,35 @@ class AccountServiceImpl : AccountService {
     }
 
     override fun tip(event: MessageCreateEvent): String {
-        var resp = ""
         val contents = event.message.content.split(" ")
-        if (contents.size == 4 || contents.size == 5) {
-            var dataToSend = ""
-            if (contents.size == 5) {
-                dataToSend = contents[4]
-            }
-            when (contents[1].toUpperCase()) {
+        var resp = ""
 
-                "SEM" -> resp = semuxService.tip(event.message.author.idAsString, contents[2], contents[3], dataToSend)
-            }
-        } else {
+        var users = HashSet<User>(event.message.mentionedUsers)
+        var roles = event.message.mentionedRoles
 
-            resp = "Use: !tip CUR amount @User"
+        roles.forEach { users.addAll(it.users) }
+
+
+        var amountToSend = BigDecimal(contents[2])
+        if (users.size > 0) {
+            amountToSend = amountToSend.divide(BigDecimal(users.size))
+        }
+        users.forEach {
+
+            val contents = event.message.content.split(" ")
+            if (contents.size == 4 || contents.size == 5) {
+                var dataToSend = ""
+                if (contents.size == 5) {
+                    dataToSend = contents[4]
+                }
+                when (contents[1].toUpperCase()) {
+
+                    "SEM" -> resp = semuxService.tip(event.message.author.idAsString, amountToSend.toPlainString(), it.idAsString, dataToSend)
+                }
+            } else {
+
+                resp = "Use: !tip CUR amount @User"
+            }
         }
 
 

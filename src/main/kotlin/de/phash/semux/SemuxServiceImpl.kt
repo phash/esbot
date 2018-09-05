@@ -96,9 +96,9 @@ class SemuxServiceImpl : SemuxService {
 
     }
 
-    override fun tip(from: String, amount: String, user: String, data: String?): String {
+    override fun tip(from: String, amount: String, userTo: String, data: String?): String {
         var resp = ""
-        col.findOne(Benutzer::discordId eq from).let { benutzer ->
+        col.findOne(Benutzer::discordId eq userTo).let { benutzer ->
             val account = benutzer?.accounts?.get("SEM") as Account
             resp = this.send(from, amount, account.address, data)
         }
