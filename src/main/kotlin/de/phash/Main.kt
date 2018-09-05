@@ -4,7 +4,6 @@ package de.phash
 import org.javacord.api.DiscordApiBuilder
 import org.javacord.api.entity.message.embed.EmbedBuilder
 import org.javacord.api.event.message.MessageCreateEvent
-
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -18,7 +17,7 @@ fun main(args: Array<String>) {
         System.exit(0)
     }
     // PropertyService.instance.readProperties(args.get(0))
-
+    println("ODER: " + PropertyService.instance.getProperty("discordToken"))
     val token = PropertyService.instance.getProperty("discordToken")
     val api = DiscordApiBuilder().setToken(token).login().join()
     println("You can invite the bot by using the following url: " + api.createBotInvite())
@@ -41,11 +40,24 @@ fun main(args: Array<String>) {
             send(event)
         else if (event.message.content.startsWith("!tip", ignoreCase = true))
             tip(event)
+        else if (event.message.content.startsWith("!vote", ignoreCase = true))
+            vote(event)
+        else if (event.message.content.startsWith("!unvote", ignoreCase = true))
+            unvote(event)
         else if (event.message.content.startsWith("!cookie", ignoreCase = true))
             event.channel.sendMessage("serving ${event.message.author.displayName} a delicious cookie!")
         else if (event.message.content.startsWith("!balance", ignoreCase = true))
             checkBalance(event)
     }
+}
+
+fun vote(event: MessageCreateEvent) {
+    event.message.channel.sendMessage(accountService.vote(event))
+
+}
+
+fun unvote(event: MessageCreateEvent) {
+    event.message.channel.sendMessage(accountService.unvote(event))
 }
 
 fun tip(event: MessageCreateEvent) {

@@ -133,4 +133,12 @@ class AccountServiceImpl : AccountService {
 
         return resp
     }
+
+    override fun unvote(event: MessageCreateEvent): String {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun vote(event: MessageCreateEvent): String {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 }

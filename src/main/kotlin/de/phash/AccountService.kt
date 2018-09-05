@@ -9,4 +9,7 @@ interface AccountService {
     fun register(event: MessageCreateEvent)
     fun send(event: MessageCreateEvent): String
     fun tip(event: MessageCreateEvent): String
+    fun unvote(event: MessageCreateEvent): String
+
+    fun vote(event: MessageCreateEvent): String
 }

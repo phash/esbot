@@ -11,4 +11,6 @@ interface SemuxService {
     fun checkBalance(username: String): AccountServiceImpl.Balance
     fun tip(from: String, amount: String, user: String, data: String?): String
     fun send(from: String, amount: String, address: String, data: String?): String
+    fun unvote(from: String, amount: String, address: String): String
+    fun vote(from: String, amount: String, address: String): String
 }

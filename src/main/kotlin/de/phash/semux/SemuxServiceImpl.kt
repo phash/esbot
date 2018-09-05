@@ -22,11 +22,7 @@ class SemuxServiceImpl : SemuxService {
     data class Benutzer(val _id: ObjectId, val name: String, val discordId: String, val accounts: HashMap<String, Account>)
     data class Account(val _id: ObjectId, val currencyName: String, val address: String)
 
-    private val sex: ISemuxClient = SemuxClient(
-            PropertyService.instance.getProperty("semuxServiceUrl"),
-            PropertyService.instance.getProperty("semuxServicePort").toInt(),
-            PropertyService.instance.getProperty("semuxServiceUser"),
-            PropertyService.instance.getProperty("semuxServicePassword"))
+    private val sex: ISemuxClient
     //sex.createAccount()
     private val client: MongoClient = KMongo.createClient("localhost", 27017)
     private val database: MongoDatabase = client.getDatabase("accounts")
@@ -43,10 +39,18 @@ class SemuxServiceImpl : SemuxService {
 
     companion object {
         val instance: SemuxServiceImpl by lazy { Holder.INSTANCE }
-        val fee = 5000000L
-        val devFee = 250000000L
+        val fee = PropertyService.instance.getProperty("semuxFee").toLong()
+        val devFee = PropertyService.instance.getProperty("semuxDevFee").toLong()
 
         val semMultiplicator = BigDecimal("1000000000")
+    }
+
+    constructor() {
+        sex = SemuxClient(
+                PropertyService.instance.getProperty("semuxServiceUrl"),
+                PropertyService.instance.getProperty("semuxServicePort").toInt(),
+                PropertyService.instance.getProperty("semuxServiceUser"),
+                PropertyService.instance.getProperty("semuxServicePassword"))
     }
 
     override fun register(name: String, discordId: String): String {
@@ -137,6 +141,59 @@ class SemuxServiceImpl : SemuxService {
         return response
     }
 
+    override fun vote(from: String, amount: String, address: String): String {
+        var response: String = ""
+
+        val let = col.findOne(Benutzer::discordId eq from).let { benutzer ->
+            val account = benutzer?.accounts?.get("SEM") as Account
+            try {
+                println("User found: account.address ${account.address}")
+                val amountToSend = BigDecimal(amount).multiply(BigDecimal("1000000000"))
+                println("amountToSend: ${amountToSend.toPlainString()}")
+                var dataToSend: ByteArray? = null
+
+                try {
+                    val result = sex.vote(account.address, address, amountToSend.toLong(), fee)
+                    response = "voted $result"
+                } catch (e: Exception) {
+                    response = e.localizedMessage
+                }
+
+                return@let benutzer
+            } catch (e: Exception) {
+                response = e.localizedMessage
+            }
+
+        }
+        return response
+    }
+
+    override fun unvote(from: String, amount: String, address: String): String {
+        var response: String = ""
+
+        val let = col.findOne(Benutzer::discordId eq from).let { benutzer ->
+            val account = benutzer?.accounts?.get("SEM") as Account
+            try {
+                println("User found: account.address ${account.address}")
+                val amountToSend = BigDecimal(amount).multiply(BigDecimal("1000000000"))
+                println("amountToSend: ${amountToSend.toPlainString()}")
+                var dataToSend: ByteArray? = null
+
+                try {
+                    val result = sex.unvote(account.address, address, amountToSend.toLong(), fee)
+                    response = "unvoted $result"
+                } catch (e: Exception) {
+                    response = e.localizedMessage
+                }
+
+                return@let benutzer
+            } catch (e: Exception) {
+                response = e.localizedMessage
+            }
+
+        }
+        return response
+    }
 
     private fun creaeteSemuxAccount(): Account {
 
