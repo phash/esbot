@@ -31,7 +31,7 @@ class PropertyService {
 
     private constructor() {
 
-        FileInputStream("src/main/resources/config.properties").use {
+        FileInputStream("./config/config.properties").use {
             prop.load(it)
         }
     }
