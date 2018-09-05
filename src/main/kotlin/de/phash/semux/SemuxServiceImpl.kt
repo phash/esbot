@@ -43,8 +43,8 @@ class SemuxServiceImpl : SemuxService {
 
     companion object {
         val instance: SemuxServiceImpl by lazy { Holder.INSTANCE }
-        val fee = 5000000L
-        val devFee = 250000000L
+        val fee = PropertyService.instance.getProperty("semuxFee").toLong()
+        val devFee = PropertyService.instance.getProperty("semuxDevFee").toLong()
 
         val semMultiplicator = BigDecimal("1000000000")
     }
@@ -137,6 +137,33 @@ class SemuxServiceImpl : SemuxService {
         return response
     }
 
+    fun vote(from: String, amount: String, address: String): String {
+        var response: String = ""
+
+        val let = col.findOne(Benutzer::discordId eq from).let { benutzer ->
+            val account = benutzer?.accounts?.get("SEM") as Account
+            try {
+                println("User found: account.address ${account.address}")
+                val amountToSend = BigDecimal(amount).multiply(BigDecimal("1000000000"))
+                println("amountToSend: ${amountToSend.toPlainString()}")
+                var dataToSend: ByteArray? = null
+
+                try {
+                    val result = sex.vote(account.address, address, amountToSend.toLong(), fee)
+                    response = "TX Hash: " + result +
+                            "\nhttps://semux.info/explorer/transaction/" + result
+                } catch (e: Exception) {
+                    response = e.localizedMessage
+                }
+
+                return@let benutzer
+            } catch (e: Exception) {
+                response = e.localizedMessage
+            }
+
+        }
+        return response
+    }
 
     private fun creaeteSemuxAccount(): Account {
 
