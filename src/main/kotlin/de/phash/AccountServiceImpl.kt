@@ -78,13 +78,23 @@ class AccountServiceImpl : AccountService {
     }
 
     override fun tip(event: MessageCreateEvent): String {
+        var resp = ""
         val contents = event.message.content.split(" ")
-        if (contents.size != 4) return "Use: !tip CUR amount @User"
-        when (contents[1].toUpperCase()) {
-            "SEM" -> semuxService.tip(event.message.author.idAsString, contents[2], contents[3], contents[4])
+        if (contents.size == 4 || contents.size == 5) {
+            var dataToSend = ""
+            if (contents.size == 5) {
+                dataToSend = contents[4]
+            }
+            when (contents[1].toUpperCase()) {
+
+                "SEM" -> resp = semuxService.tip(event.message.author.idAsString, contents[2], contents[3], dataToSend)
+            }
+        } else {
+
+            resp = "Use: !tip CUR amount @User"
         }
 
 
-        return ""
+        return resp
     }
 }
