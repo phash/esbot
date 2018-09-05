@@ -4,20 +4,22 @@ package de.phash
 import org.javacord.api.DiscordApiBuilder
 import org.javacord.api.entity.message.embed.EmbedBuilder
 import org.javacord.api.event.message.MessageCreateEvent
+
 import java.text.SimpleDateFormat
 import java.util.*
 
-val service = CmCApiServiceImpl.instance as CmCApiService
-//val semuxService = SemuxServiceImpl.instance as SemuxService
+val cmCApiService = CmCApiServiceImpl.instance as CmCApiService
 
 val accountService = AccountServiceImpl.instance as AccountService
+
 
 fun main(args: Array<String>) {
     if (args.size < 1) {
         System.exit(0)
     }
+    // PropertyService.instance.readProperties(args.get(0))
 
-    val token = args.get(0)
+    val token = PropertyService.instance.getProperty("discordToken")
     val api = DiscordApiBuilder().setToken(token).login().join()
     println("You can invite the bot by using the following url: " + api.createBotInvite())
 
@@ -43,10 +45,7 @@ fun main(args: Array<String>) {
             event.channel.sendMessage("serving ${event.message.author.displayName} a delicious cookie!")
         else if (event.message.content.startsWith("!balance", ignoreCase = true))
             checkBalance(event)
-
     }
-
-
 }
 
 fun tip(event: MessageCreateEvent) {
@@ -70,7 +69,7 @@ fun regist(event: MessageCreateEvent) {
 }
 
 fun calculateCached(event: MessageCreateEvent) {
-    service.calculateCached(event)
+    cmCApiService.calculateCached(event)
 }
 
 fun help(event: MessageCreateEvent) {
@@ -95,7 +94,7 @@ fun help(event: MessageCreateEvent) {
 
 
 fun calculate(event: MessageCreateEvent) {
-    service.calculateSingle(event)
+    cmCApiService.calculateSingle(event)
 }
 
 fun stringtoDate(dates: String): Date {

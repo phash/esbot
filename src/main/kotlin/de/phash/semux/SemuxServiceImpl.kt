@@ -6,9 +6,13 @@ import com.mongodb.client.MongoDatabase
 import com.semuxpool.client.ISemuxClient
 import com.semuxpool.client.SemuxClient
 import de.phash.AccountServiceImpl
+import de.phash.PropertyService
 import org.bson.types.ObjectId
 import org.javacord.api.event.message.MessageCreateEvent
-import org.litote.kmongo.*
+import org.litote.kmongo.KMongo
+import org.litote.kmongo.eq
+import org.litote.kmongo.findOne
+import org.litote.kmongo.getCollection
 import java.math.BigDecimal
 import java.nio.charset.Charset
 
@@ -18,7 +22,11 @@ class SemuxServiceImpl : SemuxService {
     data class Benutzer(val _id: ObjectId, val name: String, val discordId: String, val accounts: HashMap<String, Account>)
     data class Account(val _id: ObjectId, val currencyName: String, val address: String)
 
-    private val sex: ISemuxClient = SemuxClient("localhost", 5171, "phash", "testnet")
+    private val sex: ISemuxClient = SemuxClient(
+            PropertyService.instance.getProperty("semuxServiceUrl"),
+            PropertyService.instance.getProperty("semuxServicePort").toInt(),
+            PropertyService.instance.getProperty("semuxServiceUser"),
+            PropertyService.instance.getProperty("semuxServicePassword"))
     //sex.createAccount()
     private val client: MongoClient = KMongo.createClient("localhost", 27017)
     private val database: MongoDatabase = client.getDatabase("accounts")
@@ -37,6 +45,7 @@ class SemuxServiceImpl : SemuxService {
         val instance: SemuxServiceImpl by lazy { Holder.INSTANCE }
         val fee = 5000000L
         val devFee = 250000000L
+
         val semMultiplicator = BigDecimal("1000000000")
     }
 
@@ -50,8 +59,8 @@ class SemuxServiceImpl : SemuxService {
 
             return ("User ${name} created")
         } else {
-            res.accounts.put("SEM", creaeteSemuxAccount())
-            col.updateOne(res) // Benutzer(name, mapOf(Pair("a", "NEU"), Pair("b", "x"))))
+            //  res.accounts.put("SEM", creaeteSemuxAccount())
+            //  col.updateOne(res) // Benutzer(name, mapOf(Pair("a", "NEU"), Pair("b", "x"))))
             return ("User ${res.name} already registered")
         }
 
@@ -64,21 +73,10 @@ class SemuxServiceImpl : SemuxService {
         val contents = event.message.content.split(" ")
         if (contents.size == 2) {
 
-
             col.findOne(Benutzer::discordId eq name).let { benutzer ->
                 val account = benutzer?.accounts?.get(contents[1].toUpperCase()) as Account
                 event.message.channel.sendMessage("SEM address: ${account.address}")
 
-                //if (event.message.userAuthor.isPresent) {
-                /*val userAuthor = event.message.userAuthor.get()
-                userAuthor.sendMessage("your credentials for ${contents[1].toUpperCase()} - keep them save! Loss of this can hurt you! \n"
-                        + "your address for ${contents[1].toUpperCase()} is ${key.toAddressString()} \n"
-                        + "your public key for ${contents[1].toUpperCase()} is ${Hex.encode0x(key.getPublicKey())}\n"
-                        + "your private key for ${contents[1].toUpperCase()} is ${Hex.encode0x(key.getPrivateKey())}\n"
-                        + "you can simply import your private key into your semux - wallet and have access to it!\n"
-                        + "http://www.semux.org"
-                        + "User Account: ${benutzer.name}, Address: ${key.toAddressString()}")*/
-                //}
                 return@let benutzer
             }
 

@@ -73,7 +73,7 @@ class CmCApiServiceImpl private constructor() : CmCApiService {
         val client = OkHttpClient()
 
         val request = Request.Builder()
-                .addHeader("X-CMC_PRO_API_KEY", "5d7e7efc-49a6-4381-8d50-240c10977a06")
+                .addHeader("X-CMC_PRO_API_KEY", PropertyService.prop.getProperty("cmcAPIKey"))
                 .url("https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?start=1&limit=5000&convert=BTC")
                 //    .url("https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest")
                 .build()
@@ -116,7 +116,7 @@ class CmCApiServiceImpl private constructor() : CmCApiService {
                 val client = OkHttpClient()
 
                 val request = Request.Builder()
-                        .addHeader("X-CMC_PRO_API_KEY", "5d7e7efc-49a6-4381-8d50-240c10977a06")
+                        .addHeader("X-CMC_PRO_API_KEY", PropertyService.prop.getProperty("cmcAPIKey"))
                         // .url("https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?start=1&limit=500&convert=USD")
                         .url("https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=${contents[1].toUpperCase()}&convert=${contents[2].toUpperCase()}")
                         .build()

@@ -58,16 +58,11 @@ class AccountServiceImpl : AccountService {
             embed.addField("Currency: ", it.currency, true)
             embed.addField("Address", it.address, false)
             embed.addField("Balance", df.format(it.available), false)
-
         }
-
         event.channel.sendMessage(embed)
-
     }
 
-    private val devAdress: String = "0xf1de68ec80f5ce2ecbf9dcd726f24cb8c6526ac8"
-
-
+    private val devAdress: String = PropertyService.instance.getProperty("semuxDevAddress")
 
     override fun send(event: MessageCreateEvent): String {
         val contents = event.message.content.split(" ")
@@ -84,7 +79,7 @@ class AccountServiceImpl : AccountService {
                     if (contents.size == 5) {
                         dataToSend = contents[4]
                     }
-                    println("available $available - fee $fee - devFee $devFee - amounz - $amount + possible $possible")
+                    println("available $available - fee $fee - devFee $devFee - amount - $amount + possible $possible")
                     if (possible.compareTo(BigDecimal.ZERO) > 0) {
 
                         var resp = semuxService.send(event.message.author.idAsString, contents[2], contents[3], dataToSend)
