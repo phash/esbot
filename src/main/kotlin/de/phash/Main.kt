@@ -13,9 +13,7 @@ val accountService = AccountServiceImpl.instance as AccountService
 
 
 fun main(args: Array<String>) {
-    if (args.size < 1) {
-        System.exit(0)
-    }
+    
     // PropertyService.instance.readProperties(args.get(0))
     println("ODER: " + PropertyService.instance.getProperty("discordToken"))
     val token = PropertyService.instance.getProperty("discordToken")
