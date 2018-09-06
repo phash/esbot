@@ -110,7 +110,7 @@ class AccountServiceImpl : AccountService {
 
         var amountToSend = BigDecimal(contents[2])
         if (users.size > 0) {
-            amountToSend = amountToSend.divide(BigDecimal(users.size))
+            amountToSend = amountToSend.divide(BigDecimal(users.size)).subtract(BigDecimal(SemuxServiceImpl.fee).divide(SemuxServiceImpl.semMultiplicator))
         }
         users.forEach {
 
