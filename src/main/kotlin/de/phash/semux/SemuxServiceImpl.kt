@@ -208,7 +208,6 @@ class SemuxServiceImpl : SemuxService {
                         println("add-> ${account.address}")
                         println("res-> $res")
                         val votes = Gson().fromJson(res, VotesList::class.java)
-                        votes.result.get(1).delegate.address
 
                         if (votes.result.isNotEmpty()) {
                             val embed = EmbedBuilder()
