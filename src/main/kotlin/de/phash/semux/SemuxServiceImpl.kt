@@ -30,7 +30,7 @@ class SemuxServiceImpl : SemuxService {
         val semMultiplicator = BigDecimal("1000000000")
     }
 
-    constructor() {
+    init {
         sex = SemuxClient(
                 PropertyService.instance.getProperty("semuxServiceUrl"),
                 PropertyService.instance.getProperty("semuxServicePort").toInt(),
@@ -38,19 +38,13 @@ class SemuxServiceImpl : SemuxService {
                 PropertyService.instance.getProperty("semuxServicePassword"))
     }
 
-    override fun register(name: String, discordId: String): String {
-
-
-        var res: Repository.Benutzer? = Repository.instance.col.findOne(Repository.Benutzer::name eq name)
-        if (res == null) {
-
-            Repository.instance.col.insertOne(Repository.Benutzer(ObjectId(), name, discordId, hashMapOf(Pair("SEM", creaeteSemuxAccount()))))
-
-            return ("User ${name} created")
+    override fun register(username: String, discordId: String): String {
+        val res: Repository.Benutzer? = Repository.instance.col.findOne(Repository.Benutzer::name eq username)
+        return if (res == null) {
+            Repository.instance.col.insertOne(Repository.Benutzer(ObjectId(), username, discordId, hashMapOf(Pair("SEM", creaeteSemuxAccount()))))
+            ("User ${username} created")
         } else {
-            //  res.accounts.put("SEM", creaeteSemuxAccount())
-            //  col.updateOne(res) // Benutzer(name, mapOf(Pair("a", "NEU"), Pair("b", "x"))))
-            return ("User ${res.name} already registered")
+            ("User ${res.name} already registered")
         }
 
     }
@@ -71,10 +65,10 @@ class SemuxServiceImpl : SemuxService {
         }
     }
 
-    override fun checkBalance(name: String): AccountServiceImpl.Balance {
+    override fun checkBalance(username: String): AccountServiceImpl.Balance {
 
-        println("checking balance for $name")
-        Repository.instance.col.findOne(Repository.Benutzer::discordId eq name).let { benutzer ->
+        println("checking balance for $username")
+        Repository.instance.col.findOne(Repository.Benutzer::discordId eq username).let { benutzer ->
             val account = benutzer?.accounts?.get("SEM") as Repository.Account
             val semuxAccount = sex.getAccount(account.address)
             //       event.channel.sendMessage("currently available: ${semuxAccount.available}, Address: ${key.toAddressString()}")
@@ -85,9 +79,9 @@ class SemuxServiceImpl : SemuxService {
 
     }
 
-    override fun tip(from: String, amount: String, userTo: String, data: String?): String {
+    override fun tip(from: String, amount: String, user: String, data: String?): String {
         var resp = ""
-        Repository.instance.col.findOne(Repository.Benutzer::discordId eq userTo).let { benutzer ->
+        Repository.instance.col.findOne(Repository.Benutzer::discordId eq user).let { benutzer ->
             val account = benutzer?.accounts?.get("SEM") as Repository.Account
             resp = this.send(from, amount, account.address, data)
         }
@@ -95,9 +89,9 @@ class SemuxServiceImpl : SemuxService {
     }
 
     override fun send(from: String, amount: String, address: String, data: String?): String {
-        var response: String = ""
+        var response = ""
         println("sending $amount from $from (userId) to $address, with data: $data")
-        val let = Repository.instance.col.findOne(Repository.Benutzer::discordId eq from).let { benutzer ->
+        Repository.instance.col.findOne(Repository.Benutzer::discordId eq from).let { benutzer ->
             val account = benutzer?.accounts?.get("SEM") as Repository.Account
             try {
                 println("User found: account.address ${account.address}")
@@ -126,15 +120,14 @@ class SemuxServiceImpl : SemuxService {
     }
 
     override fun vote(from: String, amount: String, address: String): String {
-        var response: String = ""
+        var response = ""
 
-        val let = Repository.instance.col.findOne(Repository.Benutzer::discordId eq from).let { benutzer ->
+        Repository.instance.col.findOne(Repository.Benutzer::discordId eq from).let { benutzer ->
             val account = benutzer?.accounts?.get("SEM") as Repository.Account
             try {
                 println("User found: account.address ${account.address}")
                 val amountToSend = BigDecimal(amount).multiply(semMultiplicator)
                 println("amountToSend: ${amountToSend.toPlainString()}")
-                var dataToSend: ByteArray? = null
 
                 try {
                     val result = sex.vote(account.address, address, amountToSend.toLong(), fee)
@@ -153,21 +146,20 @@ class SemuxServiceImpl : SemuxService {
     }
 
     override fun unvote(from: String, amount: String, address: String): String {
-        var response: String = ""
+        var response = ""
 
-        val let = Repository.instance.col.findOne(Repository.Benutzer::discordId eq from).let { benutzer ->
+        Repository.instance.col.findOne(Repository.Benutzer::discordId eq from).let { benutzer ->
             val account = benutzer?.accounts?.get("SEM") as Repository.Account
             try {
                 println("User found: account.address ${account.address}")
                 val amountToSend = BigDecimal(amount).multiply(semMultiplicator)
                 println("amountToSend: ${amountToSend.toPlainString()}")
-                var dataToSend: ByteArray? = null
 
-                try {
+                response = try {
                     val result = sex.unvote(account.address, address, amountToSend.toLong(), fee)
-                    response = "unvoted $result"
+                    "unvoted $result"
                 } catch (e: Exception) {
-                    response = e.localizedMessage
+                    e.localizedMessage
                 }
 
                 return@let benutzer
@@ -181,7 +173,7 @@ class SemuxServiceImpl : SemuxService {
 
     override fun votes(event: MessageCreateEvent) {
 
-        val let = Repository.instance.col.findOne(Repository.Benutzer::discordId eq event.message.author.idAsString).let { benutzer ->
+        Repository.instance.col.findOne(Repository.Benutzer::discordId eq event.message.author.idAsString).let { benutzer ->
             val account = benutzer?.accounts?.get("SEM") as Repository.Account
             try {
                 println("User found: account.address ${account.address}")
@@ -211,10 +203,7 @@ class SemuxServiceImpl : SemuxService {
 
     private fun creaeteSemuxAccount(): Repository.Account {
 
-        val addr = sex.createAccount()
-        val acc = sex.getAccount(addr)
-        //val key = createSemuxAccount()
-        return Repository.Account(ObjectId(), "SEM", addr)
+        return Repository.Account(ObjectId(), "SEM", sex.createAccount())
     }
 
 }

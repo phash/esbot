@@ -85,10 +85,6 @@ fun calculateCached(event: MessageCreateEvent) {
 }
 
 fun help(event: MessageCreateEvent) {
-    val content = event.message.content
-    val contents = content.split(" ")
-
-
     val embed = EmbedBuilder()
             .setTitle("Help")
             .addField("View market price", "!bc CUR [amount]", true)
@@ -99,6 +95,11 @@ fun help(event: MessageCreateEvent) {
             .addField("Get Keys", "!account CUR", true)
             .addField("Send Money to address", "!send CUR amount receiver", true)
             .addField("Tip Money", "!tip CUR amount @user", true)
+            .addField("Vote", "!vote CUR amount delegateAddress", true)
+            .addField("Unvote", "!unvote CUR amount delegateAddress", true)
+            .addField("List Votes", "!listvotes CUR", true)
+
+
     event.channel.sendMessage(embed)
 
 
@@ -109,11 +110,9 @@ fun calculate(event: MessageCreateEvent) {
     cmCApiService.calculateSingle(event)
 }
 
-fun stringtoDate(dates: String): Date {
+fun stringtoDate(date: String): Date {
     val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
             Locale.ENGLISH)
-    var date = sdf.parse(dates)
-    println(date)
-    return date!!
+    return sdf.parse(date)!!
 }
 

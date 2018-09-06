@@ -47,7 +47,7 @@ class AccountServiceImpl : AccountService {
     override fun checkBalance(event: MessageCreateEvent) {
 
         val balances = ArrayList<Balance>()
-        var df = DecimalFormat("0.00########")
+        val df = DecimalFormat("0.00########")
 
         balances.add(semuxService.checkBalance(event.message.author.idAsString))
 
@@ -70,11 +70,11 @@ class AccountServiceImpl : AccountService {
 
             when (contents[1].toUpperCase()) {
                 "SEM" -> {
-                    var available = semuxService.checkBalance(event.message.author.idAsString).available.multiply(SemuxServiceImpl.semMultiplicator)
-                    var fee = BigDecimal(SemuxServiceImpl.fee)
-                    var devFee = BigDecimal(SemuxServiceImpl.devFee)
-                    var amount = BigDecimal(contents[2]).multiply(SemuxServiceImpl.semMultiplicator)
-                    var possible = available.subtract(fee.multiply(BigDecimal("2")).add(devFee).add(amount))
+                    val available = semuxService.checkBalance(event.message.author.idAsString).available.multiply(SemuxServiceImpl.semMultiplicator)
+                    val fee = BigDecimal(SemuxServiceImpl.fee)
+                    val devFee = BigDecimal(SemuxServiceImpl.devFee)
+                    val amount = BigDecimal(contents[2]).multiply(SemuxServiceImpl.semMultiplicator)
+                    val possible = available.subtract(fee.multiply(BigDecimal("2")).add(devFee).add(amount))
                     var dataToSend = ""
                     if (contents.size == 5) {
                         dataToSend = contents[4]
@@ -102,8 +102,8 @@ class AccountServiceImpl : AccountService {
         val contents = event.message.content.split(" ")
         var resp = ""
 
-        var users = HashSet<User>(event.message.mentionedUsers)
-        var roles = event.message.mentionedRoles
+        val users = HashSet<User>(event.message.mentionedUsers)
+        val roles = event.message.mentionedRoles
 
         roles.forEach { users.addAll(it.users) }
 
@@ -114,8 +114,7 @@ class AccountServiceImpl : AccountService {
         }
         users.forEach {
 
-            val contents = event.message.content.split(" ")
-            if (contents.size == 4 || contents.size == 5) {
+            if (contents.size.equals(4) || contents.size.equals(5)) {
                 var dataToSend = ""
                 if (contents.size == 5) {
                     dataToSend = contents[4]
@@ -136,7 +135,6 @@ class AccountServiceImpl : AccountService {
 
     override fun listVotes(event: MessageCreateEvent) {
         val contents = event.message.content.split(" ")
-        var resp = ""
         if (contents.size != 2) {
             event.channel.sendMessage("use !votes cur")
         } else {
@@ -150,7 +148,7 @@ class AccountServiceImpl : AccountService {
     override fun unvote(event: MessageCreateEvent): String {
         val contents = event.message.content.split(" ")
         if (contents.size != 4) return "use !vote cur amount address"
-        var amountToSend = BigDecimal(contents[2])
+        val amountToSend = BigDecimal(contents[2])
         var resp = ""
         when (contents[1].toUpperCase()) {
             "SEM" ->
@@ -163,7 +161,7 @@ class AccountServiceImpl : AccountService {
 
         val contents = event.message.content.split(" ")
         if (contents.size != 4) return "use !vote cur amount address"
-        var amountToSend = BigDecimal(contents[2])
+        val amountToSend = BigDecimal(contents[2])
         var resp = ""
         when (contents[1].toUpperCase()) {
             "SEM" ->

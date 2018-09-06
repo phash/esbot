@@ -32,7 +32,6 @@ class CmCApiServiceImpl private constructor() : CmCApiService {
         val contents = content.split(" ")
         if (contents.size == 2 || contents.size == 3) {
             val now = Calendar.getInstance().time
-            timestamp = timestamp
 
             if (timestamp.time + (60 * 1000) < now.time || cachedCurrencies.isEmpty()) {
                 refreshCache()
@@ -45,24 +44,18 @@ class CmCApiServiceImpl private constructor() : CmCApiService {
             val currency = cachedCurrencies.get(contents[1].toUpperCase())
 
             val quote = currency?.getJSONObject("quote")
-            var myErg = quote?.getJSONObject("BTC")?.getBigDecimal("price")
+            val myErg = quote?.getJSONObject("BTC")?.getBigDecimal("price")
 
-            //    println(myErg?.toPlainString())
-            var calculated = myErg
-            var anzahl = ""
-            if (contents.size == 3) {
-                calculated = myErg?.multiply(BigDecimal(contents[2]))
-                anzahl = contents[2]
-            }
 
             val embed = EmbedBuilder()
                     .setTitle("calculating  ${contents[1].toUpperCase()} in BTC")
                     .addField("Searched Currency", contents[1].toUpperCase(), true)
                     .addField("Conversion Currency", "BTC", true)
             if (contents.size == 3) {
+                val calculated = myErg?.multiply(BigDecimal(contents[2]))
                 embed.addField("Quantity", contents[2], true)
+                embed.addField("Value", "$calculated", true)
             }
-            embed.addField("Value", "$calculated", true)
             embed.addField("last updated", "$timestamp", true)
             event.channel.sendMessage(embed)
         }
@@ -88,7 +81,7 @@ class CmCApiServiceImpl private constructor() : CmCApiService {
                 val res = response.body()?.string()
                 //      println(res)
 
-                var json = JSONObject(res)
+                val json = JSONObject(res)
                 //val data = json.getJSONObject("data")
                 val currencies = json.getJSONArray("data")
                 for (i in 0 until currencies.length()) {
@@ -131,13 +124,13 @@ class CmCApiServiceImpl private constructor() : CmCApiService {
                         val res = response.body()?.string()
                         println(res)
 
-                        var json = JSONObject(res)
+                        val json = JSONObject(res)
                         val data = json.getJSONObject("data")
                         println(data.toString())
                         val currency = data.getJSONObject(contents[1].toUpperCase())
                         val quote = currency.getJSONObject("quote")
-                        var myErg = quote.getJSONObject(contents[2].toUpperCase()).getBigDecimal("price")
-                        var timestamp = quote.getJSONObject(contents[2].toUpperCase()).getString("last_updated")
+                        val myErg = quote.getJSONObject(contents[2].toUpperCase()).getBigDecimal("price")
+                        val timestamp = quote.getJSONObject(contents[2].toUpperCase()).getString("last_updated")
                         var calculated = myErg
                         var anzahl = ""
                         if (contents.size == 4) {
