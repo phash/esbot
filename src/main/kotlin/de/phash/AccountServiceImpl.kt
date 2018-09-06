@@ -135,10 +135,27 @@ class AccountServiceImpl : AccountService {
     }
 
     override fun unvote(event: MessageCreateEvent): String {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val contents = event.message.content.split(" ")
+        if (contents.size != 4) return "use !vote cur amount address"
+        var amountToSend = BigDecimal(contents[2])
+        var resp = ""
+        when (contents[1].toUpperCase()) {
+            "SEM" ->
+                resp = "Voted: ${semuxService.vote(event.message.author.idAsString, amountToSend.toPlainString(), contents[3])}"
+        }
+        return resp
     }
 
     override fun vote(event: MessageCreateEvent): String {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
+        val contents = event.message.content.split(" ")
+        if (contents.size != 4) return "use !vote cur amount address"
+        var amountToSend = BigDecimal(contents[2])
+        var resp = ""
+        when (contents[1].toUpperCase()) {
+            "SEM" ->
+                resp = "Voted: ${semuxService.unvote(event.message.author.idAsString, amountToSend.toPlainString(), contents[3])}"
+        }
+        return resp
     }
 }
