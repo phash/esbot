@@ -213,7 +213,7 @@ class SemuxServiceImpl : SemuxService {
                             val embed = EmbedBuilder()
                                     .setTitle("Votes for SEMUX - delegates for ${event.message.author.displayName}")
 
-                            votes.result.forEach { it -> embed.addField("${it.delegate.address} (${it.delegate.name})", "${df.format(BigDecimal(it.votes).divide(semMultiplicator))}", true) }
+                            votes.result.forEach { it -> embed.addField("${it.delegate.address} (${it.delegate.name})", df.format(BigDecimal(it.votes).divide(semMultiplicator)), true) }
                             event.channel.sendMessage(embed)
                         } else event.channel.sendMessage("no votes found")
                     }
