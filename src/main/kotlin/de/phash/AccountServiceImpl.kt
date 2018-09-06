@@ -136,7 +136,7 @@ class AccountServiceImpl : AccountService {
     override fun listVotes(event: MessageCreateEvent) {
         val contents = event.message.content.split(" ")
         if (contents.size != 2) {
-            event.channel.sendMessage("use !votes cur")
+            event.channel.sendMessage("use !listvotes CUR")
         } else {
             when (contents[1].toUpperCase()) {
                 "SEM" ->

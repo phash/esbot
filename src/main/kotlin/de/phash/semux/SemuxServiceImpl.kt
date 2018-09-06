@@ -145,7 +145,6 @@ class SemuxServiceImpl : SemuxService {
             } catch (e: Exception) {
                 response = e.localizedMessage
             }
-
         }
         return response
     }
@@ -171,7 +170,6 @@ class SemuxServiceImpl : SemuxService {
             } catch (e: Exception) {
                 response = e.localizedMessage
             }
-
         }
         return response
     }
@@ -218,14 +216,10 @@ class SemuxServiceImpl : SemuxService {
                         } else event.channel.sendMessage("no votes found")
                     }
                 })
-
-
-
                 return@let benutzer
             } catch (e: Exception) {
                 event.channel.sendMessage(e.localizedMessage)
             }
-
         }
     }
 
