@@ -13,4 +13,5 @@ interface SemuxService {
     fun send(from: String, amount: String, address: String, data: String?): String
     fun unvote(from: String, amount: String, address: String): String
     fun vote(from: String, amount: String, address: String): String
+    fun votes(event: MessageCreateEvent)
 }

@@ -134,6 +134,18 @@ class AccountServiceImpl : AccountService {
         return resp
     }
 
+    fun getVotes(event: MessageCreateEvent) {
+        val contents = event.message.content.split(" ")
+        if (contents.size != 2) {
+            event.channel.sendMessage("use !votes cur")
+        } else {
+            when (contents[1].toUpperCase()) {
+                "SEM" ->
+                    semuxService.votes(event)
+            }
+        }
+    }
+
     override fun unvote(event: MessageCreateEvent): String {
         val contents = event.message.content.split(" ")
         if (contents.size != 4) return "use !vote cur amount address"

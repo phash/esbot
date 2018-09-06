@@ -6,6 +6,7 @@ import de.phash.AccountServiceImpl
 import de.phash.PropertyService
 import de.phash.Repository
 import org.bson.types.ObjectId
+import org.javacord.api.entity.message.embed.EmbedBuilder
 import org.javacord.api.event.message.MessageCreateEvent
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
@@ -51,7 +52,6 @@ class SemuxServiceImpl : SemuxService {
             //  col.updateOne(res) // Benutzer(name, mapOf(Pair("a", "NEU"), Pair("b", "x"))))
             return ("User ${res.name} already registered")
         }
-
 
     }
 
@@ -177,6 +177,36 @@ class SemuxServiceImpl : SemuxService {
 
         }
         return response
+    }
+
+    override fun votes(event: MessageCreateEvent) {
+
+        val let = Repository.instance.col.findOne(Repository.Benutzer::discordId eq event.message.author.idAsString).let { benutzer ->
+            val account = benutzer?.accounts?.get("SEM") as Repository.Account
+            try {
+                println("User found: account.address ${account.address}")
+
+                try {
+                    val result = sex.getVotes(account.address)
+                    if (result.isNotEmpty()) {
+
+                        val embed = EmbedBuilder()
+                                .setTitle("Votes for SEMUX - delegates for ${event.message.author.displayName}")
+                        result.forEach { (key, value) -> embed.addField(key, "$value", true) }
+                        event.channel.sendMessage(embed)
+
+                    } else event.channel.sendMessage("no votes found")
+
+                } catch (e: Exception) {
+                    event.channel.sendMessage(e.localizedMessage)
+                }
+
+                return@let benutzer
+            } catch (e: Exception) {
+                event.channel.sendMessage(e.localizedMessage)
+            }
+
+        }
     }
 
     private fun creaeteSemuxAccount(): Repository.Account {
