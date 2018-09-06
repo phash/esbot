@@ -62,11 +62,15 @@ class SemuxServiceImpl : SemuxService {
 
             Repository.instance.col.findOne(Repository.Benutzer::discordId eq name).let { benutzer ->
                 val account = benutzer?.accounts?.get(contents[1].toUpperCase()) as Repository.Account
-                event.message.channel.sendMessage("SEM address: ${account.address}")
+                val file = AccountServiceImpl.instance.createQRCode(account.address)
+                val embed = EmbedBuilder()
+                        .setTitle("SEMUX - www.semux.org")
+                        .addField("Address", account.address)
+                        .setImage(file?.toFile())
 
+                event.message.channel.sendMessage(embed)
                 return@let benutzer
             }
-
         }
     }
 
@@ -80,8 +84,6 @@ class SemuxServiceImpl : SemuxService {
 
             return AccountServiceImpl.Balance(BigDecimal(semuxAccount.available).divide(semMultiplicator), "SEM", semuxAccount.address)
         }
-
-
     }
 
     override fun tip(from: String, amount: String, user: String, data: String?): String {

@@ -1,11 +1,16 @@
 package de.phash
 
+import com.google.zxing.BarcodeFormat
+import com.google.zxing.client.j2se.MatrixToImageWriter
+import com.google.zxing.qrcode.QRCodeWriter
 import de.phash.semux.SemuxService
 import de.phash.semux.SemuxServiceImpl
 import org.javacord.api.entity.message.embed.EmbedBuilder
 import org.javacord.api.entity.user.User
 import org.javacord.api.event.message.MessageCreateEvent
 import java.math.BigDecimal
+import java.nio.file.Files
+import java.nio.file.Path
 import java.text.DecimalFormat
 
 class AccountServiceImpl : AccountService {
@@ -169,4 +174,15 @@ class AccountServiceImpl : AccountService {
         }
         return resp
     }
+
+    override fun createQRCode(toCode: String): Path? {
+        val qrCodeWriter = QRCodeWriter()
+        val matrix = qrCodeWriter.encode(toCode, BarcodeFormat.QR_CODE, 200, 200)
+        var path = Files.createTempFile(toCode, "png")
+        MatrixToImageWriter.writeToPath(matrix, "png", path)
+        return path
+    }
+
+
+
 }

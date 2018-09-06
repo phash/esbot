@@ -1,6 +1,7 @@
 package de.phash
 
 import org.javacord.api.event.message.MessageCreateEvent
+import java.nio.file.Path
 
 interface AccountService {
 
@@ -13,4 +14,6 @@ interface AccountService {
 
     fun vote(event: MessageCreateEvent): String
     fun listVotes(event: MessageCreateEvent)
+
+    fun createQRCode(toCode: String): Path?
 }
