@@ -43,7 +43,7 @@ fun main(args: Array<String>) {
         else if (event.message.content.startsWith("!unvote", ignoreCase = true))
             unvote(event)
         else if (event.message.content.startsWith("!cookie", ignoreCase = true))
-            event.channel.sendMessage("serving ${event.message.author.displayName} a delicious cookie!")
+            event.channel.sendMessage("serving ${event.message.author.displayName} a ${PropertyService.instance.getProperty("cookie")}")
         else if (event.message.content.startsWith("!balance", ignoreCase = true))
             checkBalance(event)
     }
