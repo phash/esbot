@@ -20,8 +20,6 @@ fun main(args: Array<String>) {
 
     api.addMessageCreateListener { event ->
 
-        val message = event.message.content.toLowerCase()
-
         if (event.message.content.startsWith("!calculate", ignoreCase = true))
             calculate(event)
         else if (event.message.content.startsWith("!help", ignoreCase = true))
@@ -40,11 +38,17 @@ fun main(args: Array<String>) {
             vote(event)
         else if (event.message.content.startsWith("!unvote", ignoreCase = true))
             unvote(event)
+        else if (event.message.content.startsWith("!listvotes", ignoreCase = true))
+            listvotes(event)
         else if (event.message.content.startsWith("!cookie", ignoreCase = true))
             event.channel.sendMessage("serving ${event.message.author.displayName} a ${PropertyService.instance.getProperty("cookie")}")
         else if (event.message.content.startsWith("!balance", ignoreCase = true))
             checkBalance(event)
     }
+}
+
+fun listvotes(event: MessageCreateEvent) {
+    accountService.listVotes(event)
 }
 
 fun vote(event: MessageCreateEvent) {

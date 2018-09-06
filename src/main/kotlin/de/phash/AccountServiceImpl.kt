@@ -134,8 +134,9 @@ class AccountServiceImpl : AccountService {
         return resp
     }
 
-    fun getVotes(event: MessageCreateEvent) {
+    override fun listVotes(event: MessageCreateEvent) {
         val contents = event.message.content.split(" ")
+        var resp = ""
         if (contents.size != 2) {
             event.channel.sendMessage("use !votes cur")
         } else {
@@ -153,7 +154,7 @@ class AccountServiceImpl : AccountService {
         var resp = ""
         when (contents[1].toUpperCase()) {
             "SEM" ->
-                resp = "Voted: ${semuxService.vote(event.message.author.idAsString, amountToSend.toPlainString(), contents[3])}"
+                resp = "Unvoted: ${semuxService.unvote(event.message.author.idAsString, amountToSend.toPlainString(), contents[3])}"
         }
         return resp
     }
@@ -166,7 +167,7 @@ class AccountServiceImpl : AccountService {
         var resp = ""
         when (contents[1].toUpperCase()) {
             "SEM" ->
-                resp = "Voted: ${semuxService.unvote(event.message.author.idAsString, amountToSend.toPlainString(), contents[3])}"
+                resp = "Voted: ${semuxService.vote(event.message.author.idAsString, amountToSend.toPlainString(), contents[3])}"
         }
         return resp
     }

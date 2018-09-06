@@ -12,4 +12,5 @@ interface AccountService {
     fun unvote(event: MessageCreateEvent): String
 
     fun vote(event: MessageCreateEvent): String
+    fun listVotes(event: MessageCreateEvent)
 }

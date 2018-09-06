@@ -79,7 +79,7 @@ class SemuxServiceImpl : SemuxService {
             val semuxAccount = sex.getAccount(account.address)
             //       event.channel.sendMessage("currently available: ${semuxAccount.available}, Address: ${key.toAddressString()}")
 
-            return AccountServiceImpl.Balance(BigDecimal(semuxAccount.available).divide(BigDecimal("1000000000")), "SEM", semuxAccount.address)
+            return AccountServiceImpl.Balance(BigDecimal(semuxAccount.available).divide(semMultiplicator), "SEM", semuxAccount.address)
         }
 
 
@@ -101,7 +101,7 @@ class SemuxServiceImpl : SemuxService {
             val account = benutzer?.accounts?.get("SEM") as Repository.Account
             try {
                 println("User found: account.address ${account.address}")
-                val amountToSend = BigDecimal(amount).multiply(BigDecimal("1000000000"))
+                val amountToSend = BigDecimal(amount).multiply(semMultiplicator)
                 println("amountToSend: ${amountToSend.toPlainString()}")
                 var dataToSend: ByteArray? = null
                 if (data != null) {
@@ -132,7 +132,7 @@ class SemuxServiceImpl : SemuxService {
             val account = benutzer?.accounts?.get("SEM") as Repository.Account
             try {
                 println("User found: account.address ${account.address}")
-                val amountToSend = BigDecimal(amount).multiply(BigDecimal("1000000000"))
+                val amountToSend = BigDecimal(amount).multiply(semMultiplicator)
                 println("amountToSend: ${amountToSend.toPlainString()}")
                 var dataToSend: ByteArray? = null
 
@@ -159,7 +159,7 @@ class SemuxServiceImpl : SemuxService {
             val account = benutzer?.accounts?.get("SEM") as Repository.Account
             try {
                 println("User found: account.address ${account.address}")
-                val amountToSend = BigDecimal(amount).multiply(BigDecimal("1000000000"))
+                val amountToSend = BigDecimal(amount).multiply(semMultiplicator)
                 println("amountToSend: ${amountToSend.toPlainString()}")
                 var dataToSend: ByteArray? = null
 
