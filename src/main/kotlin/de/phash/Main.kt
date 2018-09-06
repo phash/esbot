@@ -13,9 +13,7 @@ val accountService = AccountServiceImpl.instance as AccountService
 
 
 fun main(args: Array<String>) {
-    
-    // PropertyService.instance.readProperties(args.get(0))
-    println("ODER: " + PropertyService.instance.getProperty("discordToken"))
+
     val token = PropertyService.instance.getProperty("discordToken")
     val api = DiscordApiBuilder().setToken(token).login().join()
     println("You can invite the bot by using the following url: " + api.createBotInvite())
