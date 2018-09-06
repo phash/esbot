@@ -1,17 +1,22 @@
 package de.phash.semux
 
+import com.google.gson.Gson
 import com.semuxpool.client.ISemuxClient
 import com.semuxpool.client.SemuxClient
 import de.phash.AccountServiceImpl
 import de.phash.PropertyService
 import de.phash.Repository
+import okhttp3.*
+import org.apache.commons.codec.binary.Base64
 import org.bson.types.ObjectId
 import org.javacord.api.entity.message.embed.EmbedBuilder
 import org.javacord.api.event.message.MessageCreateEvent
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
+import java.io.IOException
 import java.math.BigDecimal
 import java.nio.charset.Charset
+import java.text.DecimalFormat
 
 class SemuxServiceImpl : SemuxService {
 
@@ -176,22 +181,46 @@ class SemuxServiceImpl : SemuxService {
         Repository.instance.col.findOne(Repository.Benutzer::discordId eq event.message.author.idAsString).let { benutzer ->
             val account = benutzer?.accounts?.get("SEM") as Repository.Account
             try {
-                println("User found: account.address ${account.address}")
+                val df = DecimalFormat("0.00########")
+                val client = OkHttpClient()
 
-                try {
-                    val result = sex.getVotes(account.address)
-                    if (result.isNotEmpty()) {
+                //   val mediaType = MediaType.parse("application/json")
 
-                        val embed = EmbedBuilder()
-                                .setTitle("Votes for SEMUX - delegates for ${event.message.author.displayName}")
-                        result.forEach { (key, value) -> embed.addField(key, "$value", true) }
-                        event.channel.sendMessage(embed)
+                val authString = """${PropertyService.instance.getProperty("semuxServiceUser")}:${PropertyService.instance.getProperty("semuxServicePassword")}"""
+                val authStringEnc = String(Base64.encodeBase64(authString.toByteArray()))
 
-                    } else event.channel.sendMessage("no votes found")
+                println("http://phash:testnet@127.0.0.1:5171/v2.1.0/account/votes?address=${account.address}")
+                val request = Request.Builder()
+                        .url("http://phash:testnet@127.0.0.1:5171/v2.1.0/account/votes?address=${account.address}")
+                        .addHeader("content-type", "application/json")
+                        .addHeader("cache-control", "no-cache")
+                        .addHeader("Authorization", "Basic $authStringEnc")
 
-                } catch (e: Exception) {
-                    event.channel.sendMessage(e.localizedMessage)
-                }
+                        .build()
+
+                client.newCall(request).enqueue(object : Callback {
+                    override fun onFailure(call: Call, e: IOException) {
+                        println(call.toString())
+                    }
+
+                    override fun onResponse(call: Call, response: Response) {
+                        val res = response.body()?.string()
+                        println("add-> ${account.address}")
+                        println("res-> $res")
+                        val votes = Gson().fromJson(res, VotesList::class.java)
+                        votes.result.get(1).delegate.address
+
+                        if (votes.result.isNotEmpty()) {
+                            val embed = EmbedBuilder()
+                                    .setTitle("Votes for SEMUX - delegates for ${event.message.author.displayName}")
+
+                            votes.result.forEach { it -> embed.addField("${it.delegate.address} (${it.delegate.name})", "${df.format(BigDecimal(it.votes).divide(semMultiplicator))}", true) }
+                            event.channel.sendMessage(embed)
+                        } else event.channel.sendMessage("no votes found")
+                    }
+                })
+
+
 
                 return@let benutzer
             } catch (e: Exception) {

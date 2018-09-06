@@ -68,32 +68,21 @@ class CmCApiServiceImpl private constructor() : CmCApiService {
         val request = Request.Builder()
                 .addHeader("X-CMC_PRO_API_KEY", PropertyService.prop.getProperty("cmcAPIKey"))
                 .url("https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?start=1&limit=5000&convert=BTC")
-                //    .url("https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest")
                 .build()
 
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 println(call.toString())
-
             }
 
             override fun onResponse(call: Call, response: Response) {
                 val res = response.body()?.string()
-                //      println(res)
-
                 val json = JSONObject(res)
-                //val data = json.getJSONObject("data")
                 val currencies = json.getJSONArray("data")
                 for (i in 0 until currencies.length()) {
-
                     val currency = currencies.getJSONObject(i)
-
                     cachedCurrencies.put(currency.getString("symbol"), currency)
-
-
                 }
-
-
             }
         })
     }
