@@ -20,9 +20,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <kotlin.version>1.4.31</kotlin.version>
         <junit.version>4.12</junit.version>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <kotlin.compiler.jvmTarget>11</kotlin.compiler.jvmTarget>
     </properties>
 
     <dependencies>
@@ -84,13 +84,6 @@
             <artifactId>kmongo</artifactId>
             <version>4.2.4</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.mongodb/mongodb-driver -->
-        <dependency>
-            <groupId>org.mongodb</groupId>
-            <artifactId>mongodb-driver</artifactId>
-            <version>3.12.8</version>
-        </dependency>
-
 
         <!-- https://mvnrepository.com/artifact/commons-codec/commons-codec -->
         <dependency>
