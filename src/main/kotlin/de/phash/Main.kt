@@ -6,12 +6,13 @@ import org.javacord.api.entity.message.embed.EmbedBuilder
 import org.javacord.api.event.message.MessageCreateEvent
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.logging.Logger
 
 val cmCApiService = CmCApiServiceImpl.instance as CmCApiService
 
 val accountService = AccountServiceImpl.instance as AccountService
 
-
+val log = Logger.getLogger("BotLog")
 fun main(args: Array<String>) {
 
     val token = PropertyService.instance.getProperty("discordToken")
@@ -41,10 +42,15 @@ fun main(args: Array<String>) {
         else if (event.message.content.startsWith("!listvotes", ignoreCase = true))
             listvotes(event)
         else if (event.message.content.startsWith("!cookie", ignoreCase = true))
-            event.channel.sendMessage("serving ${event.message.author.displayName} a ${PropertyService.instance.getProperty("cookie")}")
+            cookie(event)
         else if (event.message.content.startsWith("!balance", ignoreCase = true))
             checkBalance(event)
     }
+}
+
+private fun cookie(event: MessageCreateEvent) {
+    log.info("Event received ${event.messageContent}")
+    event.channel.sendMessage("serving ${event.message.author.displayName} a ${PropertyService.instance.getProperty("cookie")}")
 }
 
 fun listvotes(event: MessageCreateEvent) {
@@ -99,14 +105,13 @@ fun help(event: MessageCreateEvent) {
             .addField("Unvote", "!unvote CUR amount delegateAddress", true)
             .addField("List Votes", "!listvotes CUR", true)
 
-
     event.channel.sendMessage(embed)
-
 
 }
 
 
 fun calculate(event: MessageCreateEvent) {
+    log.info("Event received ${event.messageContent}")
     cmCApiService.calculateSingle(event)
 }
 
