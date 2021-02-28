@@ -1,6 +1,6 @@
 package de.phash
 
-import com.mongodb.MongoClient
+import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
 import org.bson.types.ObjectId
@@ -24,7 +24,8 @@ class Repository {
         val instance: Repository by lazy { Holder.INSTANCE }
     }
 
-    private val client: MongoClient = KMongo.createClient("localhost", 27017)
+    private val client: MongoClient = KMongo.createClient()
+   // ("localhost", 27017)
     private val database: MongoDatabase = client.getDatabase(PropertyService.instance.getProperty("dbName"))
     val col: MongoCollection<Benutzer>
 

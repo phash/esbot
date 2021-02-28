@@ -204,7 +204,7 @@ class SemuxServiceImpl : SemuxService {
                     }
 
                     override fun onResponse(call: Call, response: Response) {
-                        val res = response.body()?.string()
+                        val res = response.body?.string()
                         println("add-> ${account.address}")
                         println("res-> $res")
                         val votes = Gson().fromJson(res, VotesList::class.java)

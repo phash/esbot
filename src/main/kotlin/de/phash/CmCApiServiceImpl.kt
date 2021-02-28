@@ -76,7 +76,7 @@ class CmCApiServiceImpl private constructor() : CmCApiService {
             }
 
             override fun onResponse(call: Call, response: Response) {
-                val res = response.body()?.string()
+                val res = response.body?.string()
                 val json = JSONObject(res)
                 val currencies = json.getJSONArray("data")
                 for (i in 0 until currencies.length()) {
@@ -110,7 +110,7 @@ class CmCApiServiceImpl private constructor() : CmCApiService {
                     }
 
                     override fun onResponse(call: Call, response: Response) {
-                        val res = response.body()?.string()
+                        val res = response.body?.string()
                         println(res)
 
                         val json = JSONObject(res)
