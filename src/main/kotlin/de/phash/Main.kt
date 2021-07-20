@@ -1,9 +1,11 @@
 package de.phash
 
 
+import org.javacord.api.DiscordApi
 import org.javacord.api.DiscordApiBuilder
 import org.javacord.api.entity.message.embed.EmbedBuilder
 import org.javacord.api.event.message.MessageCreateEvent
+import java.math.BigDecimal
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.logging.Logger
@@ -12,6 +14,8 @@ val cmCApiService = CmCApiServiceImpl.instance as CmCApiService
 
 val accountService = AccountServiceImpl.instance as AccountService
 
+val orderService = OrderService()
+
 val log = Logger.getLogger("BotLog")
 fun main(args: Array<String>) {
 
@@ -19,36 +23,34 @@ fun main(args: Array<String>) {
     val api = DiscordApiBuilder().setToken(token).login().join()
     println("You can invite the bot by using the following url: " + api.createBotInvite())
 
-    api.addMessageCreateListener { event ->
+    startDedicated(api)
+}
 
-        if (event.message.content.startsWith("!calculate", ignoreCase = true))
-            calculate(event)
-        else if (event.message.content.startsWith("!help", ignoreCase = true))
-            help(event)
-        else if (event.message.content.startsWith("!bc", ignoreCase = true))
-            calculateCached(event)
-        else if (event.message.content.startsWith("!register", ignoreCase = true))
-            regist(event)
-        else if (event.message.content.startsWith("!account", ignoreCase = true))
-            account(event)
-        else if (event.message.content.startsWith("!send", ignoreCase = true))
-            send(event)
-        else if (event.message.content.startsWith("!tip", ignoreCase = true))
-            tip(event)
-        else if (event.message.content.startsWith("!vote", ignoreCase = true))
-            vote(event)
-        else if (event.message.content.startsWith("!unvote", ignoreCase = true))
-            unvote(event)
-        else if (event.message.content.startsWith("!listvotes", ignoreCase = true))
-            listvotes(event)
-        else if (event.message.content.startsWith("!cookie", ignoreCase = true))
-            cookie(event)
-        else if (event.message.content.startsWith("!balance", ignoreCase = true))
-            checkBalance(event)
+private fun startDedicated(api: DiscordApi) {
+    api.addMessageCreateListener { event ->
+        when {
+            event.message.content.startsWith("!calculate", ignoreCase = true) -> calculate(event)
+            event.message.content.startsWith("!help", ignoreCase = true) -> help(event)
+            event.message.content.startsWith("!bc", ignoreCase = true) -> calculateCached(event)
+            event.message.content.startsWith("!register", ignoreCase = true) -> regist(event)
+            event.message.content.startsWith("!account", ignoreCase = true) -> account(event)
+            event.message.content.startsWith("!send", ignoreCase = true) -> send(event)
+            event.message.content.startsWith("!tip", ignoreCase = true) -> tip(event)
+            event.message.content.startsWith("!vote", ignoreCase = true) -> vote(event)
+            event.message.content.startsWith("!unvote", ignoreCase = true) -> unvote(event)
+            event.message.content.startsWith("!listvotes", ignoreCase = true) -> listvotes(event)
+            event.message.content.startsWith("!cookie", ignoreCase = true) -> cookie(event)
+            event.message.content.startsWith("!balance", ignoreCase = true) -> checkBalance(event)
+            event.message.content.startsWith("!order", ignoreCase = true) -> orderWord(event)
+        }
     }
 }
 
-private fun cookie(event: MessageCreateEvent) {
+fun orderWord(event: MessageCreateEvent) {
+    event.channel.sendMessage("ordered ${orderService.orderContent(event)}")
+}
+
+fun cookie(event: MessageCreateEvent) {
     log.info("Event received ${event.messageContent}")
     event.channel.sendMessage("serving ${event.message.author.displayName} a ${PropertyService.instance.getProperty("cookie")}")
 }
@@ -59,7 +61,6 @@ fun listvotes(event: MessageCreateEvent) {
 
 fun vote(event: MessageCreateEvent) {
     event.message.channel.sendMessage(accountService.vote(event))
-
 }
 
 fun unvote(event: MessageCreateEvent) {

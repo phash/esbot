@@ -12,7 +12,6 @@ class Repository {
         col.insertOne(benutzer)
     }
 
-
     data class Benutzer(val _id: ObjectId, val name: String, val discordId: String, val accounts: HashMap<String, Account>)
     data class Account(val _id: ObjectId, val currencyName: String, val address: String)
 
